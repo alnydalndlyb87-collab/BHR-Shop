@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B-H-R V9</title>
+<style>
+body{margin:0;background:#f2f2f2;padding:10px;font-family:Arial}
+.h{background:#1a5276;color:#fff;text-align:center;padding:15px;border-radius:12px}
+.c{background:#fff;padding:15px;border-radius:12px;margin-top:12px}
+input{width:100%;padding:14px;margin:6px 0;border:2px solid #1a5276;border-radius:10px;font-size:18px;box-sizing:border-box}
+button{width:100%;padding:14px;border:none;border-radius:10px;font-size:17px;font-weight:bold;margin-top:6px}
+.g{background:#27ae60;color:#fff}.o{background:#f39c12;color:#fff}.r{background:#c0392b;color:#fff}.b{background:#1a5276;color:#fff}.pr{background:#8e44ad;color:#fff}
+.t{background:#fef9e7;border:1px solid #f1c40f;text-align:center;padding:12px;border-radius:12px;margin-top:12px;font-weight:bold;line-height:1.8}
+.it{background:#f9f9f9;padding:12px;border-radius:10px;margin:6px 0}
+.price{font-size:22px;color:#1a5276;font-weight:bold}
+.small{font-size:14px;color:#555}
+.rowBtn{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}
+.rowBtn button{width:auto;flex:1;padding:10px;font-size:14px;min-width:60px}
+@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;top:0;right:0;left:0;width:100%;background:#fff;padding:20px}}
+#printArea{display:none}
+</style></head>
+<body>
+<div id="main">
+<div class="h"><h2 style="margin:0">الإبداع والتميز B-H-R</h2><p>V9 - إصلاح الأزرار ✅ تعديل + طباعة</p></div>
+<div class="t" id="tot">جاري التحميل...</div>
+<div class="c" style="border:2px solid #1a5276;background:#eaf2f8"><h3>🔍 البحث مع السعر</h3>
+<input id="search" placeholder="اكتب: صابون او عصير او 2000"><div id="searchResult"></div></div>
+<div class="c"><h3>➕ إضافة منتج</h3>
+<input id="n" placeholder="اسم المنتج"><input id="p" type="number" placeholder="سعر البيع"><input id="buy" type="number" placeholder="سعر الشراء (اختياري)"><input id="q" type="number" placeholder="الكمية">
+<button class="g" id="btnAdd">إضافة المنتج</button></div>
+<div class="c"><h3>🛒 كل المنتجات</h3><div id="list"></div>
+<button class="pr" id="btnPrintSale">🖨️ طباعة فاتورة بيع</button></div>
+<div class="c" style="border:2px solid #27ae60"><h3>💳 ديون الزباين - لي عليهم</h3>
+<input id="dName" placeholder="اسم الزبون"><input id="dMoney" type="number" placeholder="المبلغ عليه لك"><input id="dNote" placeholder="ايش اخذ؟">
+<button class="o" id="btnAddDebt">تسجيل دين على زبون</button><div id="debtList"></div></div>
+<div class="c" style="border:2px solid #c0392b"><h3>🔴 ديوني - عليّ للموردين</h3>
+<input id="sName" placeholder="اسم المورد"><input id="sMoney" type="number" placeholder="المبلغ عليك له"><input id="sPhone" placeholder="رقم المورد (اختياري)">
+<button class="r" id="btnAddSup">تسجيل دين عليّ</button><div id="supList"></div></div>
+<div class="c" style="border:2px solid #1a5276"><h3>🧾 فواتير الشراء</h3>
+<input id="invNo" placeholder="رقم الفاتورة"><input id="invSup" placeholder="اسم المورد"><input id="invProd" placeholder="اسم المنتج"><input id="invQty" type="number" placeholder="الكمية"><input id="invBuy" type="number" placeholder="سعر الشراء للوحدة"><input id="invPaid" type="number" placeholder="كم دفعت؟">
+<button class="b" id="btnSaveInv">حفظ فاتورة الشراء + اضافة للمخزون</button><div id="invList"></div></div>
+<div class="c"><button style="background:#e74c3c;color:#fff" id="btnReset">🔄 تصفير مبيعات اليوم</button></div>
+</div>
+<div id="printArea"></div>
+<script>
+var pros=[]; var debts=[]; var suppliers=[]; var purchases=[]; var total=0; var lastSale=[];
+try{ pros=JSON.parse(localStorage.getItem('bhr_pros')||'[]'); }catch(e){pros=[]}
+try{ debts=JSON.parse(localStorage.getItem('bhr_debts')||'[]'); }catch(e){debts=[]}
+try{ suppliers=JSON.parse(localStorage.getItem('bhr_suppliers')||'[]'); }catch(e){suppliers=[]}
+try{ purchases=JSON.parse(localStorage.getItem('bhr_purchases')||'[]'); }catch(e){purchases=[]}
+try{ total=Number(localStorage.getItem('bhr_total')||0); }catch(e){total=0}
+function save(){ try{ localStorage.setItem('bhr_pros',JSON.stringify(pros)); localStorage.setItem('bhr_debts',JSON.stringify(debts)); localStorage.setItem('bhr_suppliers',JSON.stringify(suppliers)); localStorage.setItem('bhr_purchases',JSON.stringify(purchases)); localStorage.setItem('bhr_total',String(total)); }catch(e){} }
+function debtTotal(){ var s=0; for(var i=0;i<debts.length;i++) s+=Number(debts[i].m||0); return s; }
+function supTotal(){ var s=0; for(var i=0;i<suppliers.length;i++) s+=Number(suppliers[i].m||0); return s; }
+function getVal(id){ return document.getElementById(id).value; }
+function setVal(id,v){ document.getElementById(id).value=v; }
+
+function doAdd(){
+  var n=getVal('n').trim(); var p=Number(getVal('p')); var q=Number(getVal('q')); var buy=Number(getVal('buy')||0);
+  if(!n||!p||!q){ alert('اكتب الاسم والسعر والكمية'); return; }
+  var found=null; for(var i=0;i<pros.length;i++) if(pros[i].n===n) found=pros[i];
+  if(found){ found.q+=q; found.p=p; if(buy) found.buy=buy; } else { pros.push({n:n,p:p,q:q,buy:buy}); }
+  setVal('n',''); setVal('p',''); setVal('q',''); setVal('buy',''); save(); show(); alert('تم اضافة '+n);
+}
+function doSell(i){
+  if(pros[i].q<=0){ alert('خلصت'); return; }
+  pros[i].q--; total+=pros[i].p; lastSale.push({n:pros[i].n,p:pros[i].p}); save(); show();
+}
+function doEditProd(i){
+  var x=pros[i];
+  var nn=prompt('اسم المنتج:', x.n); if(nn===null) return;
+  var pp=prompt('سعر البيع:', x.p); if(pp===null) return;
+  var qq=prompt('الكمية:', x.q); if(qq===null) return;
+  var bb=prompt('سعر الشراء:', x.buy||0); if(bb===null) return;
+  pros[i]={n:nn.trim()||x.n, p:Number(pp)||x.p, q:Number(qq)||0, buy:Number(bb)||0}; save(); show(); alert('تم التعديل');
+}
+function doDelProd(i){ if(confirm('تحذف '+pros[i].n+' ؟')){ pros.splice(i,1); save(); show(); } }
+function doAddDebt(){
+  var nm=getVal('dName').trim(); var m=Number(getVal('dMoney')); var note=getVal('dNote');
+  if(!nm||!m){ alert('اكتب اسم الزبون والمبلغ'); return; }
+  debts.push({nm:nm,m:m,note:note}); setVal('dName',''); setVal('dMoney',''); setVal('dNote',''); save(); show(); alert('تم تسجيل الدين على '+nm);
+}
+function doPayDebt(i){
+  var d=debts[i]; var amt=prompt(d.nm+' عليه '+d.m+' - كم دفع؟', d.m); if(amt===null) return; amt=Number(amt); if(!amt||amt<=0) return;
+  if(amt>=d.m){ debts.splice(i,1); alert('سدد كامل'); } else { d.m-=amt; alert('باقي عليه '+d.m); } save(); show();
+}
+function doEditDebt(i){
+  var d=debts[i]; var nm=prompt('اسم الزبون:', d.nm); if(nm===null) return; var m=prompt('المبلغ:', d.m); if(m===null) return; var note=prompt('ايش اخذ؟', d.note||''); if(note===null) return;
+  debts[i]={nm:nm.trim()||d.nm, m:Number(m)||d.m, note:note}; save(); show(); alert('تم تعديل الدين');
+}
+function doDelDebt(i){ if(confirm('تحذف دين '+debts[i].nm+' ؟')){ debts.splice(i,1); save(); show(); } }
+function doAddSup(){
+  var nm=getVal('sName').trim(); var m=Number(getVal('sMoney')); var ph=getVal('sPhone');
+  if(!nm||!m){ alert('اكتب اسم المورد والمبلغ'); return; }
+  suppliers.push({nm:nm,m:m,phone:ph}); setVal('sName',''); setVal('sMoney',''); setVal('sPhone',''); save(); show(); alert('تم تسجيل دين عليك للمورد '+nm);
+}
+function doPaySup(i){
+  var d=suppliers[i]; var amt=prompt('عليك للمورد '+d.nm+' مبلغ '+d.m+' - كم دفعت؟', d.m); if(amt===null) return; amt=Number(amt); if(!amt||amt<=0) return;
+  if(amt>=d.m){ suppliers.splice(i,1); alert('سددت كامل'); } else { d.m-=amt; alert('باقي عليك '+d.m); } save(); show();
+}
+function doEditSup(i){
+  var d=suppliers[i]; var nm=prompt('اسم المورد:', d.nm); if(nm===null) return; var m=prompt('المبلغ:', d.m); if(m===null) return; var ph=prompt('رقم المورد:', d.phone||''); if(ph===null) return;
+  suppliers[i]={nm:nm.trim()||d.nm, m:Number(m)||d.m, phone:ph}; save(); show(); alert('تم تعديل دين المورد');
+}
+function doDelSup(i){ if(confirm('تحذف دين المورد '+suppliers[i].nm+' ؟')){ suppliers.splice(i,1); save(); show(); } }
+function doSaveInv(){
+  var invNo=getVal('invNo').trim() || ('INV-'+Date.now().toString().slice(-5));
+  var sup=getVal('invSup').trim(); var prod=getVal('invProd').trim(); var qty=Number(getVal('invQty')); var buy=Number(getVal('invBuy')); var paid=Number(getVal('invPaid')||0);
+  if(!sup||!prod||!qty||!buy){ alert('اكتب المورد والمنتج والكمية وسعر الشراء'); return; }
+  var totalInv=qty*buy; if(paid>totalInv) paid=totalInv; var remain=totalInv-paid;
+  purchases.unshift({invNo:invNo,sup:sup,prod:prod,qty:qty,buy:buy,total:totalInv,paid:paid,remain:remain,date:new Date().toLocaleDateString('ar')});
+  var found=null; for(var i=0;i<pros.length;i++) if(pros[i].n===prod) found=pros[i];
+  if(found){ found.q+=qty; found.buy=buy; } else { pros.push({n:prod,p:Math.ceil(buy*1.2),q:qty,buy:buy}); }
+  if(remain>0){ suppliers.push({nm:sup,m:remain,phone:'فاتورة '+invNo}); }
+  setVal('invNo',''); setVal('invSup',''); setVal('invProd',''); setVal('invQty',''); setVal('invBuy',''); setVal('invPaid',''); save(); show(); alert('تم حفظ الفاتورة '+invNo+' - الباقي عليك: '+remain);
+}
+function doEditInv(i){
+  var p=purchases[i]; var sup=prompt('اسم المورد:', p.sup); if(sup===null) return; var prod=prompt('المنتج:', p.prod); if(prod===null) return; var qty=prompt('الكمية:', p.qty); if(qty===null) return; var buy=prompt('سعر الشراء:', p.buy); if(buy===null) return; var paid=prompt('كم دفعت؟', p.paid); if(paid===null) return;
+  qty=Number(qty)||p.qty; buy=Number(buy)||p.buy; paid=Number(paid)||0; var totalInv=qty*buy; if(paid>totalInv) paid=totalInv; var remain=totalInv-paid;
+  purchases[i]={invNo:p.invNo,sup:sup,prod:prod,qty:qty,buy:buy,total:totalInv,paid:paid,remain:remain,date:p.date}; save(); show(); alert('تم تعديل الفاتورة');
+}
+function doDelInv(i){ if(confirm('تحذف فاتورة '+purchases[i].invNo+' ؟')){ purchases.splice(i,1); save(); show(); } }
+function doPrint(html){
+  var pa=document.getElementById('printArea'); pa.innerHTML=html; pa.style.display='block'; window.print(); pa.style.display='none';
+}
+function doPrintInv(i){
+  var p=purchases[i];
+  var html='<div style="text-align:center;font-family:Arial;direction:rtl"><h2>الإبداع والتميز B-H-R</h2><p>فاتورة شراء</p><hr><p><b>رقم الفاتورة:</b> '+p.invNo+' | <b>التاريخ:</b> '+p.date+'</p><p><b>المورد:</b> '+p.sup+'</p><table border="1" style="width:100%;border-collapse:collapse;text-align:center"><tr><th>المنتج</th><th>الكمية</th><th>سعر الشراء</th><th>الاجمالي</th></tr><tr><td>'+p.prod+'</td><td>'+p.qty+'</td><td>'+p.buy+'</td><td>'+p.total+'</td></tr></table><p><b>الاجمالي:</b> '+p.total+' ريال<br><b>دفعت:</b> '+p.paid+' ريال<br><b>الباقي عليك:</b> '+p.remain+' ريال</p><hr><p>توقيع المورد: .......... | توقيع المحل: ..........</p></div>';
+  doPrint(html);
+}
+function doPrintDebt(i){
+  var d=debts[i]; var html='<div style="text-align:center;font-family:Arial;direction:rtl"><h2>الإبداع والتميز B-H-R</h2><p>سند دين زبون</p><hr><p><b>الزبون:</b> '+d.nm+'</p><p><b>المبلغ:</b> '+d.m+' ريال</p><p><b>البيان:</b> '+(d.note||'')+'</p><p>توقيع الزبون: ..........</p><p>'+new Date().toLocaleDateString('ar')+'</p></div>'; doPrint(html);
+}
+function doPrintSup(i){
+  var d=suppliers[i]; var html='<div style="text-align:center;font-family:Arial;direction:rtl"><h2>الإبداع والتميز B-H-R</h2><p>سند دين عليّ للمورد</p><hr><p><b>المورد:</b> '+d.nm+'</p><p><b>المبلغ عليّ:</b> '+d.m+' ريال</p><p><b>الرقم:</b> '+(d.phone||'')+'</p></div>'; doPrint(html);
+}
+function doPrintSale(){
+  if(lastSale.length==0){ alert('بيع شي اولاً عشان تطبع'); return; }
+  var rows=''; var sum=0; for(var i=0;i<lastSale.length;i++){ rows+='<tr><td>'+lastSale[i].n+'</td><td>1</td><td>'+lastSale[i].p+'</td><td>'+lastSale[i].p+'</td></tr>'; sum+=lastSale[i].p; }
+  var html='<div style="text-align:center;font-family:Arial;direction:rtl"><h2>الإبداع والتميز B-H-R</h2><p>فاتورة بيع</p><p>'+new Date().toLocaleString('ar')+'</p><hr><table border="1" style="width:100%;border-collapse:collapse;text-align:center"><tr><th>المنتج</th><th>الكمية</th><th>السعر</th><th>الاجمالي</th></tr>'+rows+'</table><h3>الاجمالي: '+sum+' ريال</h3></div>'; doPrint(html);
+}
+function doReset(){ if(confirm('تصفر مبيعات اليوم؟ المنتجات والديون بتبقى')){ total=0; lastSale=[]; save(); show(); } }
+
+document.getElementById('btnAdd').onclick=doAdd;
+document.getElementById('btnAddDebt').onclick=doAddDebt;
+document.getElementById('btnAddSup').onclick=doAddSup;
+document.getElementById('btnSaveInv').onclick=doSaveInv;
+document.getElementById('btnPrintSale').onclick=doPrintSale;
+document.getElementById('btnReset').onclick=doReset;
+document.getElementById('search').oninput=show;
+
+// هذا هو الاصلاح: كل الازرار الصغيرة تشتغل من مكان واحد، مو من داخل الكود
+document.body.addEventListener('click', function(e){
+  var b=e.target; if(!b || !b.getAttribute) return;
+  var act=b.getAttribute('data-act'); if(!act) return;
+  var idx=Number(b.getAttribute('data-i'));
+  if(act==='sell') doSell(idx);
+  if(act==='editProd') doEditProd(idx);
+  if(act==='delProd') doDelProd(idx);
+  if(act==='payDebt') doPayDebt(idx);
+  if(act==='editDebt') doEditDebt(idx);
+  if(act==='printDebt') doPrintDebt(idx);
+  if(act==='delDebt') doDelDebt(idx);
+  if(act==='paySup') doPaySup(idx);
+  if(act==='editSup') doEditSup(idx);
+  if(act==='printSup') doPrintSup(idx);
+  if(act==='delSup') doDelSup(idx);
+  if(act==='printInv') doPrintInv(idx);
+  if(act==='editInv') doEditInv(idx);
+  if(act==='delInv') doDelInv(idx);
+});
+
+function show(){
+  try{
+    var s=document.getElementById('search').value.trim();
+    var forMe=debtTotal(), onMe=supTotal(), net=forMe-onMe;
+    document.getElementById('tot').innerHTML='مبيعات اليوم: '+total+' ريال<br><span style="color:#27ae60">💚 لي على الزباين: '+forMe+' ريال</span> | <span style="color:#c0392b">🔴 عليّ للموردين: '+onMe+' ريال</span><br><span style="color:#1a5276">الصافي: '+(net>=0? 'لك '+net : 'عليك '+(-net))+' ريال</span>';
+    var h=''; for(var i=0;i<pros.length;i++){ var x=pros[i]; h+='<div class="it"><div><b>'+x.n+'</b><br><span class="price">'+x.p+' ريال</span> | المتبقي '+x.q+'</div><div class="rowBtn"><button class="b" data-act="sell" data-i="'+i+'">بيع</button><button class="o" data-act="editProd" data-i="'+i+'">تعديل</button><button class="r" data-act="delProd" data-i="'+i+'">حذف</button></div></div>'; }
+    document.getElementById('list').innerHTML=h||'لا يوجد منتجات';
+    var sr=document.getElementById('searchResult');
+    if(!s){ sr.innerHTML=''; } else { var found=[]; for(var k=0;k<pros.length;k++){ if(pros[k].n.indexOf(s)>=0 || String(pros[k].p).indexOf(s)>=0) found.push(pros[k]); } if(found.length==0){ sr.innerHTML='<div style="background:#fdecea;padding:12px;border-radius:10px;text-align:center"><b>❌ مو موجود: '+s+'</b></div>'; } else { var out='<div style="background:#e8f8f5;padding:12px;border-radius:10px"><b>✅ لقيت '+found.length+' منتج</b></div>'; for(var j=0;j<found.length;j++){ out+='<div class="it"><b>'+found[j].n+'</b><br><span class="price">'+found[j].p+' ريال</span><br>المتبقي: '+found[j].q+'</div>'; } sr.innerHTML=out; } }
+    var dh=''; for(var i=0;i<debts.length;i++){ var d=debts[i]; dh+='<div class="it"><div><b>'+d.nm+'</b><br>'+d.m+' ريال - '+(d.note||'')+'</div><div class="rowBtn"><button class="g" data-act="payDebt" data-i="'+i+'">دفع</button><button class="o" data-act="editDebt" data-i="'+i+'">تعديل</button><button class="pr" data-act="printDebt" data-i="'+i+'">طباعة</button><button class="r" data-act="delDebt" data-i="'+i+'">حذف</button></div></div>'; }
+    document.getElementById('debtList').innerHTML=dh||'لا يوجد ديون';
+    var sh=''; for(var i=0;i<suppliers.length;i++){ var sd=suppliers[i]; sh+='<div class="it"><div><b>'+sd.nm+'</b><br>'+sd.m+' ريال - '+(sd.phone||'')+'</div><div class="rowBtn"><button class="g" data-act="paySup" data-i="'+i+'">دفعت</button><button class="o" data-act="editSup" data-i="'+i+'">تعديل</button><button class="pr" data-act="printSup" data-i="'+i+'">طباعة</button><button class="r" data-act="delSup" data-i="'+i+'">حذف</button></div></div>'; }
+    document.getElementById('supList').innerHTML=sh||'لا يوجد ديون عليك';
+    var ih=''; for(var i=0;i<purchases.length;i++){ var p=purchases[i]; ih+='<div class="it"><div><b>فاتورة '+p.invNo+' - '+p.sup+'</b><br>'+p.prod+' x '+p.qty+' - الاجمالي '+p.total+' | دفعت '+p.paid+' | باقي '+p.remain+'<br><span class="small">'+(p.date||'')+'</span></div><div class="rowBtn"><button class="pr" data-act="printInv" data-i="'+i+'">طباعة</button><button class="o" data-act="editInv" data-i="'+i+'">تعديل</button><button class="r" data-act="delInv" data-i="'+i+'">حذف</button></div></div>'; }
+    document.getElementById('invList').innerHTML=ih||'لا يوجد فواتير';
+  }catch(err){ document.getElementById('tot').innerHTML='فيه خطأ بسيط، حدث الصفحة: '+err.message; }
+}
+show();
+</script></body></html>
