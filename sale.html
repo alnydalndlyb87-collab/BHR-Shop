@@ -12,7 +12,7 @@ button{border:0;border-radius:12px;padding:12px;width:100%;font-weight:bold;curs
 input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin-top:6px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{width:auto;flex:1;background:#334155;color:#fff;font-size:13px}
 .tabs button.on{background:#2563eb}
-.green{background:#16a34a;color:#fff}.blue{background:#2563eb;color:#fff}.yellow{background:#eab308}.red{background:#dc2626;color:#fff}.dark{background:#0f172a;color:#fff}.purple{background:#7c3aed;color:#fff}
+.green{background:#16a34a;color:#fff}.blue{background:#2563eb;color:#fff}.yellow{background:#eab308}.red{background:#dc2626;color:#fff}.purple{background:#7c3aed;color:#fff}
 .row{display:flex;gap:6px}.row>*{flex:1}
 .item{background:#f1f5f9;color:#111;padding:10px;border-radius:12px;margin-top:8px}
 .big{font-size:28px;font-weight:bold;text-align:center}
@@ -22,12 +22,9 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 </head>
 <body>
 <div id="lock" class="white center">
-<h2>💼 نظام محلك التقني برؤية حديثة</h2>
-<p style="color:#2563eb;font-weight:bold">BHR PRO - ✨ نسخة احترافية</p>
-<p>الباقي يطلع صح: عليه ولا علي</p>
-<input id="code" placeholder="اكتب كود التفعيل مثلا BHR-0001">
+<h2>💼 نظام محلك التقني برؤية حديثة</h2><p style="color:#2563eb;font-weight:bold">BHR PRO</p>
+<input id="code" placeholder="اكتب كود التفعيل BHR-0001">
 <button class="green" onclick="login()">✅ تفعيل ودخول</button>
-<p class="small" style="color:#666">السعر: 300 ريال سعودي بدل 500 ريال<br>نسخة مرخصة لجهاز واحد</p>
 </div>
 <div id="app" style="display:none">
 <div class="card">
@@ -42,32 +39,11 @@ input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;ma
 <div class="row noPrint"><button class="yellow" onclick="exportData()">📤 تصدير</button><button class="white" onclick="document.getElementById('file').click()">📥 استيراد</button></div>
 <input type="file" id="file" hidden onchange="importData(event)">
 </div>
-<div id="tab-debts">
-<div class="card"><input id="custName" placeholder="اسم الزبون"><button class="green" onclick="addPerson('cust')">+ إضافة خانه جديدة له</button></div>
-<div id="custList"></div>
-</div>
-<div id="tab-mydebts" style="display:none">
-<div class="card"><input id="supName" placeholder="اسم اللي انا مدين له"><button class="green" onclick="addPerson('sup')">+ إضافة خانه جديدة</button></div>
-<div id="supList"></div>
-</div>
-<div id="tab-stock" style="display:none">
-<div class="card"><h3>📦 إضافة بضاعة</h3>
-<input id="pName" placeholder="اسم البضاعة"><input id="pQty" type="number" placeholder="الكمية"><input id="pPrice" type="number" placeholder="سعر البيع"><input id="pBuy" type="number" placeholder="سعر الشراء">
-<button class="blue" onclick="addProduct()">+ إضافة بضاعة</button></div>
-<div id="prodList"></div>
-</div>
-<div id="tab-invoices" style="display:none">
-<div class="card"><h3>🧾 فاتورة جديدة</h3>
-<select id="invCust"></select><select id="invProd"></select>
-<input id="invQty" type="number" value="1" placeholder="الكمية">
-<select id="invType"><option value="cash">كاش</option><option value="debt">دين - على الزبون</option></select>
-<button class="green" onclick="addInvoice()">+ إضافة فاتورة وطباعة</button></div>
-<div id="invList"></div>
-</div>
-<div id="tab-inventory" style="display:none">
-<div class="card"><h3>📊 الجرد - نظام محلك التقني برؤية حديثة</h3><p>قيمة البضاعة بيع: <b id="stockSell">0</b></p><p>قيمة البضاعة شراء: <b id="stockBuy">0</b></p><p>الربح المتوقع: <b id="stockProfit">0</b></p><p>ديون الزبائن: <b id="totalCust">0</b></p><p>ديوني علي: <b id="totalSup">0</b></p><p>الفواتير: <b id="totalInv">0</b></p><button class="blue noPrint" onclick="window.print()">🖨️ طباعة الجرد</button></div>
-<div id="invReport"></div>
-</div>
+<div id="tab-debts"><div class="card"><input id="custName" placeholder="اسم الزبون"><button class="green" onclick="addPerson('cust')">+ إضافة خانه جديدة له</button></div><div id="custList"></div></div>
+<div id="tab-mydebts" style="display:none"><div class="card"><input id="supName" placeholder="اسم اللي انا مدين له"><button class="green" onclick="addPerson('sup')">+ إضافة خانه جديدة</button></div><div id="supList"></div></div>
+<div id="tab-stock" style="display:none"><div class="card"><h3>📦 إضافة بضاعة</h3><input id="pName" placeholder="اسم البضاعة"><input id="pQty" type="number" placeholder="الكمية"><input id="pPrice" type="number" placeholder="سعر البيع"><input id="pBuy" type="number" placeholder="سعر الشراء"><button class="blue" onclick="addProduct()">+ إضافة بضاعة</button></div><div id="prodList"></div></div>
+<div id="tab-invoices" style="display:none"><div class="card"><h3>🧾 فاتورة جديدة</h3><select id="invCust"></select><select id="invProd"></select><input id="invQty" type="number" value="1"><select id="invType"><option value="cash">كاش</option><option value="debt">دين - على الزبون</option></select><button class="green" onclick="addInvoice()">+ إضافة فاتورة وطباعة</button></div><div id="invList"></div></div>
+<div id="tab-inventory" style="display:none"><div class="card"><h3>📊 الجرد</h3><p>قيمة البضاعة بيع: <b id="stockSell">0</b></p><p>قيمة البضاعة شراء: <b id="stockBuy">0</b></p><p>الربح المتوقع: <b id="stockProfit">0</b></p><p>ديون الزبائن: <b id="totalCust">0</b></p><p>ديوني علي: <b id="totalSup">0</b></p><p>الفواتير: <b id="totalInv">0</b></p><button class="blue noPrint" onclick="window.print()">🖨️ طباعة الجرد</button></div><div id="invReport"></div></div>
 </div>
 <script>
 let codes={"BHR-0001":"محل 1","BHR-0002":"محل 2"};
@@ -89,8 +65,8 @@ function addInvoice(){let ci=document.getElementById("invCust").value,pi=documen
 function editInv(i){let x=data.inv[i];let q=parseFloat(prompt("تعديل كمية الفاتورة",x.qty));if(!isNaN(q)) x.qty=q;let t=parseFloat(prompt("تعديل اجمالي الفاتورة",x.total));if(!isNaN(t)) x.total=t;save();}
 function delInv(i){data.inv.splice(i,1);save();}
 function render(){
-let cl=document.getElementById("custList");cl.innerHTML="";data.cust.forEach((c,i)=>{let bal=c.inv-c.paid;cl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="purple" style="width:130px" onclick="editAll('cust',${i})">✏️ تعديل كل شي</button></div><div class="row"><div class="item">الفواتير:<br><b>${c.inv}</b></div><div class="item">المدفوع:<br><b>${c.paid}</b></div></div><div class="card"><div class="center">الباقي عليه</div><div class="big" style="color:${bal>=0?'#16a34a':'#dc2626'}">${bal} ريال</div></div><div class="row"><button class="blue" onclick="addMoney('cust',${i},'inv')">+ دين / فاتورة</button><button class="green" onclick="addMoney('cust',${i},'paid')">+ دفع / سداد</button></div><button class="red" onclick="delPerson('cust',${i})">حذف</button></div>`;});
-let sl=document.getElementById("supList");sl.innerHTML="";data.sup.forEach((c,i)=>{let bal=c.inv-c.paid;sl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="purple" style="width:130px" onclick="editAll('sup',${i})">✏️ تعديل كل شي</button></div><div class="row"><div class="item">علي:<br><b>${c.inv}</b></div><div class="item">دفعت:<br><b>${c.paid}</b></div></div><div class="card"><div class="center">الباقي علي - أنا مدين له</div><div class="big" style="color:#dc2626">${bal} ريال</div></div><div class="row"><button class="blue" onclick="addMoney('sup',${i},'inv')">+ دين علي</button><button class="green" onclick="addMoney('sup',${i},'paid')">+ سددت له</button></div><button class="red" onclick="delPerson('sup',${i})">حذف</button></div>`;});
+let cl=document.getElementById("custList");cl.innerHTML="";data.cust.forEach((c,i)=>{let bal=c.inv-c.paid;let label=bal>0?"الباقي عليه - هو مدين لي":bal<0?"دفع زيادة - أنا مدين له":"تم السداد - متعادل ✅";let show=Math.abs(bal);let col=bal>0?"#16a34a":bal<0?"#dc2626":"#111";cl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="purple" style="width:130px" onclick="editAll('cust',${i})">✏️ تعديل كل شي</button></div><div class="row"><div class="item">الفواتير:<br><b>${c.inv}</b></div><div class="item">المدفوع:<br><b>${c.paid}</b></div></div><div class="card"><div class="center">${label}</div><div class="big" style="color:${col}">${show} ريال</div><div class="small" style="color:#333">الفواتير ${c.inv} - المدفوع ${c.paid} = ${bal}</div></div><div class="row"><button class="blue" onclick="addMoney('cust',${i},'inv')">+ دين / فاتورة</button><button class="green" onclick="addMoney('cust',${i},'paid')">+ دفع / سداد</button></div><button class="red" onclick="delPerson('cust',${i})">حذف</button></div>`;});
+let sl=document.getElementById("supList");sl.innerHTML="";data.sup.forEach((c,i)=>{let bal=c.inv-c.paid;let label=bal>0?"الباقي علي - أنا مدين له":bal<0?"لي عنده - هو مدين لي":"تم السداد - متعادل ✅";let show=Math.abs(bal);let col=bal>0?"#dc2626":bal<0?"#16a34a":"#111";sl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="purple" style="width:130px" onclick="editAll('sup',${i})">✏️ تعديل كل شي</button></div><div class="row"><div class="item">علي:<br><b>${c.inv}</b></div><div class="item">دفعت:<br><b>${c.paid}</b></div></div><div class="card"><div class="center">${label}</div><div class="big" style="color:${col}">${show} ريال</div><div class="small" style="color:#333">علي ${c.inv} - دفعت ${c.paid} = ${bal}</div></div><div class="row"><button class="blue" onclick="addMoney('sup',${i},'inv')">+ دين علي</button><button class="green" onclick="addMoney('sup',${i},'paid')">+ سددت له</button></div><button class="red" onclick="delPerson('sup',${i})">حذف</button></div>`;});
 let pl=document.getElementById("prodList");pl.innerHTML="";data.prod.forEach((p,i)=>{pl.innerHTML+=`<div class="white"><b>📦 ${p.name}</b> - الكمية: ${p.qty} - البيع: ${p.price} - الشراء: ${p.buy}<button class="purple" onclick="editProd(${i})">✏️ تعديل كل شي</button><button class="red" onclick="delProd(${i})">حذف</button></div>`;});
 let sc=document.getElementById("invCust");sc.innerHTML="";data.cust.forEach((c,i)=>sc.innerHTML+=`<option value="${i}">${c.name}</option>`);
 let sp=document.getElementById("invProd");sp.innerHTML="";data.prod.forEach((p,i)=>sp.innerHTML+=`<option value="${i}">${p.name} - ${p.price} ريال - متبقي ${p.qty}</option>`);
@@ -107,4 +83,4 @@ function importData(e){let r=new FileReader();r.onload=()=>{data=JSON.parse(r.re
 render();
 </script>
 </body>
-                                                                                                  </html>
+</html>
