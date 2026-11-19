@@ -2,198 +2,120 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>نظام محلك التقني - برؤية حديثة</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BHR PRO - نظام المحل</title>
 <style>
-*{box-sizing:border-box;font-family:Tahoma,Arial}
-body{margin:0;background:#0f172a;color:#111}
-.lock{max-width:420px;margin:60px auto;background:#fff;padding:25px;border-radius:16px;text-align:center;box-shadow:0 10px 30px #0003}
-.lock h1{color:#0f172a}
-input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;margin:10px 0;font-size:18px;text-align:center}
-button{width:100%;padding:14px;border:0;border-radius:10px;background:#16a34a;color:#fff;font-size:18px;font-weight:bold;cursor:pointer}
-.app{display:none;background:#f1f5f9;min-height:100vh;padding:15px}
-header{background:#0f172a;color:#fff;padding:15px;border-radius:12px;display:flex;justify-content:space-between}
-.card{background:#fff;padding:15px;border-radius:12px;margin-top:12px}
-.item{border:1px solid #eee;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between}
-.btn{padding:8px 12px;border:0;border-radius:8px;cursor:pointer;font-weight:bold}
+*{box-sizing:border-box;font-family:Tahoma}body{margin:0;background:#0f172a;color:#fff;padding:10px}
+.card{background:#1e293b;border-radius:16px;padding:12px;margin-bottom:10px}
+.white{background:#fff;color:#111;border-radius:16px;padding:12px;margin-bottom:10px}
+button{border:0;border-radius:12px;padding:12px;width:100%;font-weight:bold;cursor:pointer;margin-top:6px}
+input,select{width:100%;padding:12px;border-radius:12px;border:1px solid #ccc;margin-top:6px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}.tabs button{width:auto;flex:1;background:#334155;color:#fff;font-size:13px}
+.tabs button.on{background:#2563eb}
+.green{background:#16a34a;color:#fff}.blue{background:#2563eb;color:#fff}.yellow{background:#eab308}.red{background:#dc2626;color:#fff}.dark{background:#0f172a;color:#fff}
+.row{display:flex;gap:6px}.row>*{flex:1}
+.item{background:#f1f5f9;color:#111;padding:10px;border-radius:12px;margin-top:8px}
+.big{font-size:28px;font-weight:bold;text-align:center}
+.center{text-align:center}.small{font-size:12px;color:#cbd5e1;text-align:center}
+@media print{body{background:#fff;color:#000}.noPrint{display:none!important}.white,.card{background:#fff;color:#000;border:1px solid #000}}
 </style>
 </head>
 <body>
 
-<div id="lockScreen" class="lock">
-<h1>💼 نظام محلك التقني</h1>
-<p style="font-weight:bold">برؤية حديثة - نسخة مرخصة</p>
-<p style="color:#666;font-size:14px">يلزم كود التفعيل للدخول<br>للحصول على كود، تواصل واتساب مع صاحب النظام</p>
-<input id="codeInput" placeholder="اكتب كود التفعيل مثلا BHR-0001">
-<button onclick="checkCode()">تفعيل ودخول ✅</button>
-<p id="msg" style="color:red"></p>
-<p style="font-size:13px;color:#888">السعر: 300 ريال سعودي بدل 500 ريال<br>هذه النسخة مرخصة لجهاز واحد، ولا تعمل بدون كود</p>
+<div id="lock" class="white center">
+<h2>💼 BHR PRO - نظام المحل</h2>
+<p>✨ نسخة احترافية - الباقي يطلع صح: عليه ولا علي</p>
+<input id="code" placeholder="اكتب كود التفعيل مثلا BHR-0001">
+<button class="green" onclick="login()">✅ تفعيل ودخول</button>
+<p class="small" style="color:#666">السعر: 300 ريال سعودي بدل 500 ريال<br>هذه النسخة مرخصة لجهاز واحد ولا تعمل بدون كود</p>
 </div>
 
-<div id="app" class="app">
-<header><div><b id="shopName">نظام محلك التقني</b><div id="licInfo" style="font-size:13px;opacity:.9"></div></div><button onclick="logout()" style="background:#fff;color:#b91c1c;width:auto;padding:8px 12px">خروج</button></header>
-
+<div id="app" style="display:none">
 <div class="card">
-<b>إجمالي ديون الزبائن: <span id="total" style="color:green">0</span> ريال</b>
-<hr>
-<input id="cusName" placeholder="اسم الزبون الجديد">
-<button onclick="addCus()" style="background:#2563eb">+ إضافة زبون</button>
+<div class="row"><div><h2 style="margin:0">💼 BHR PRO - نظام المحل</h2><p class="small" style="text-align:right" id="shopName"></p></div><button class="red" style="width:80px" onclick="logout()">🔒 قفل</button></div>
+<p class="small">✨ نسخة احترافية - الباقي يطلع صح: عليه ولا علي</p>
+<div class="tabs">
+<button class="on" onclick="showTab('debts',this)">ديون الزبائن - لهم عليهم</button>
+<button onclick="showTab('mydebts',this)">ديون علي - أنا مدين لهم</button>
+<button onclick="showTab('stock',this)">📦 البضاعة</button>
+<button onclick="showTab('invoices',this)">🧾 فواتير</button>
+<button onclick="showTab('inventory',this)">📊 الجرد</button>
+</div>
+<div class="row noPrint"><button class="yellow" onclick="exportData()">📤 تصدير</button><button class="white" onclick="document.getElementById('file').click()">📥 استيراد</button></div>
+<input type="file" id="file" hidden onchange="importData(event)">
 </div>
 
-<div class="card"><h3>الزبائن</h3><div id="list"></div></div>
-<div class="card"><p style="font-size:12px;color:#888">© نظام محلك التقني - برؤية حديثة - نسخة مرخصة - يمنع النسخ أو المشاركة</p></div>
+<!-- ديون الزبائن -->
+<div id="tab-debts">
+<div class="card"><input id="custName" placeholder="اسم الزبون / المورد"><button class="green" onclick="addPerson('cust')">+ إضافة خانه جديدة له</button></div>
+<div id="custList"></div>
+</div>
+
+<!-- ديون علي -->
+<div id="tab-mydebts" style="display:none">
+<div class="card"><input id="supName" placeholder="اسم اللي انا مدين له - مورد / شخص"><button class="green" onclick="addPerson('sup')">+ إضافة خانه جديدة</button></div>
+<div id="supList"></div>
+</div>
+
+<!-- البضاعة -->
+<div id="tab-stock" style="display:none">
+<div class="card"><h3>📦 إضافة بضاعة</h3>
+<input id="pName" placeholder="اسم البضاعة"><input id="pQty" type="number" placeholder="الكمية"><input id="pPrice" type="number" placeholder="سعر البيع"><input id="pBuy" type="number" placeholder="سعر الشراء">
+<button class="blue" onclick="addProduct()">+ إضافة بضاعة</button></div>
+<div id="prodList"></div>
+</div>
+
+<!-- الفواتير -->
+<div id="tab-invoices" style="display:none">
+<div class="card"><h3>🧾 فاتورة جديدة</h3>
+<select id="invCust"></select><select id="invProd"></select>
+<input id="invQty" type="number" value="1" placeholder="الكمية">
+<select id="invType"><option value="cash">كاش</option><option value="debt">دين - على الزبون</option></select>
+<button class="green" onclick="addInvoice()">+ إضافة فاتورة وطباعة</button></div>
+<div id="invList"></div>
+</div>
+
+<!-- الجرد -->
+<div id="tab-inventory" style="display:none">
+<div class="card"><h3>📊 الجرد</h3><p>إجمالي قيمة البضاعة بسعر البيع: <b id="stockSell">0</b> ريال</p><p>إجمالي قيمة البضاعة بسعر الشراء: <b id="stockBuy">0</b> ريال</p><p>الربح المتوقع: <b id="stockProfit">0</b> ريال</p><p>إجمالي ديون الزبائن: <b id="totalCust">0</b> ريال</p><p>إجمالي ديوني علي: <b id="totalSup">0</b> ريال</p><p>إجمالي الفواتير: <b id="totalInv">0</b> ريال</p><button class="blue noPrint" onclick="window.print()">🖨️ طباعة الجرد</button></div>
+<div id="invReport"></div>
+</div>
+
 </div>
 
 <script>
-let CODES = {
-"BHR-0001": "محل 1",
-"BHR-0002": "محل 2",
-"BHR-0003": "محل 3",
-"BHR-0004": "محل 4",
-"BHR-0005": "محل 5",
-"BHR-0006": "محل 6",
-"BHR-0007": "محل 7",
-"BHR-0008": "محل 8",
-"BHR-0009": "محل 9",
-"BHR-0010": "محل 10",
-"BHR-0011": "محل 11",
-"BHR-0012": "محل 12",
-"BHR-0013": "محل 13",
-"BHR-0014": "محل 14",
-"BHR-0015": "محل 15",
-"BHR-0016": "محل 16",
-"BHR-0017": "محل 17",
-"BHR-0018": "محل 18",
-"BHR-0019": "محل 19",
-"BHR-0020": "محل 20",
-"BHR-0021": "محل 21",
-"BHR-0022": "محل 22",
-"BHR-0023": "محل 23",
-"BHR-0024": "محل 24",
-"BHR-0025": "محل 25",
-"BHR-0026": "محل 26",
-"BHR-0027": "محل 27",
-"BHR-0028": "محل 28",
-"BHR-0029": "محل 29",
-"BHR-0030": "محل 30",
-"BHR-0031": "محل 31",
-"BHR-0032": "محل 32",
-"BHR-0033": "محل 33",
-"BHR-0034": "محل 34",
-"BHR-0035": "محل 35",
-"BHR-0036": "محل 36",
-"BHR-0037": "محل 37",
-"BHR-0038": "محل 38",
-"BHR-0039": "محل 39",
-"BHR-0040": "محل 40",
-"BHR-0041": "محل 41",
-"BHR-0042": "محل 42",
-"BHR-0043": "محل 43",
-"BHR-0044": "محل 44",
-"BHR-0045": "محل 45",
-"BHR-0046": "محل 46",
-"BHR-0047": "محل 47",
-"BHR-0048": "محل 48",
-"BHR-0049": "محل 49",
-"BHR-0050": "محل 50",
-"BHR-0051": "محل 51",
-"BHR-0052": "محل 52",
-"BHR-0053": "محل 53",
-"BHR-0054": "محل 54",
-"BHR-0055": "محل 55",
-"BHR-0056": "محل 56",
-"BHR-0057": "محل 57",
-"BHR-0058": "محل 58",
-"BHR-0059": "محل 59",
-"BHR-0060": "محل 60",
-"BHR-0061": "محل 61",
-"BHR-0062": "محل 62",
-"BHR-0063": "محل 63",
-"BHR-0064": "محل 64",
-"BHR-0065": "محل 65",
-"BHR-0066": "محل 66",
-"BHR-0067": "محل 67",
-"BHR-0068": "محل 68",
-"BHR-0069": "محل 69",
-"BHR-0070": "محل 70",
-"BHR-0071": "محل 71",
-"BHR-0072": "محل 72",
-"BHR-0073": "محل 73",
-"BHR-0074": "محل 74",
-"BHR-0075": "محل 75",
-"BHR-0076": "محل 76",
-"BHR-0077": "محل 77",
-"BHR-0078": "محل 78",
-"BHR-0079": "محل 79",
-"BHR-0080": "محل 80",
-"BHR-0081": "محل 81",
-"BHR-0082": "محل 82",
-"BHR-0083": "محل 83",
-"BHR-0084": "محل 84",
-"BHR-0085": "محل 85",
-"BHR-0086": "محل 86",
-"BHR-0087": "محل 87",
-"BHR-0088": "محل 88",
-"BHR-0089": "محل 89",
-"BHR-0090": "محل 90",
-"BHR-0091": "محل 91",
-"BHR-0092": "محل 92",
-"BHR-0093": "محل 93",
-"BHR-0094": "محل 94",
-"BHR-0095": "محل 95",
-"BHR-0096": "محل 96",
-"BHR-0097": "محل 97",
-"BHR-0098": "محل 98",
-"BHR-0099": "محل 99",
-"BHR-0100": "محل 100"
-};
-
-let myCode = localStorage.getItem('bhr_license_code');
-let myShop = localStorage.getItem('bhr_license_shop');
-function showApp(){
-  document.getElementById('lockScreen').style.display='none';
-  document.getElementById('app').style.display='block';
-  document.getElementById('shopName').innerText = myShop || 'نظام محلك التقني';
-  document.getElementById('licInfo').innerText = 'مرخص لـ: ' + (myShop||'') + ' | الكود: ' + myCode;
-  render();
-}
-if(myCode && CODES[myCode]){ showApp(); }
-function checkCode(){
-  let c = document.getElementById('codeInput').value.trim().toUpperCase();
-  if(CODES[c]){
-    localStorage.setItem('bhr_license_code', c);
-    localStorage.setItem('bhr_license_shop', CODES[c]);
-    myCode=c; myShop=CODES[c];
-    showApp();
-  } else {
-    document.getElementById('msg').innerText='❌ الكود غلط، تواصل مع البائع للحصول على كود صحيح';
-  }
-}
-function logout(){ if(confirm('متأكد تبي تسجيل خروج؟ بيحتاج كود مرة ثانية')){ localStorage.removeItem('bhr_license_code'); location.reload(); } }
-let customers = JSON.parse(localStorage.getItem('bhr_sale_customers')||'[]');
-function save(){ localStorage.setItem('bhr_sale_customers', JSON.stringify(customers)); render(); }
-function addCus(){
-  let n=document.getElementById('cusName').value.trim();
-  if(!n) return alert('اكتب اسم الزبون');
-  customers.push({name:n, total:0, paid:0});
-  document.getElementById('cusName').value=''; save();
-}
-function addDebt(i){
-  let a=+prompt('كم أخذ؟'); if(!a) return;
-  customers[i].total+=a; save();
-}
-function addPay(i){
-  let a=+prompt('كم دفع؟'); if(!a) return;
-  customers[i].paid+=a; save();
-}
+let codes={"BHR-0001":"محل 1","BHR-0002":"محل 2"};
+let data=JSON.parse(localStorage.getItem("bhr_pro")||'{"cust":[],"sup":[],"prod":[],"inv":[]}');
+function save(){localStorage.setItem("bhr_pro",JSON.stringify(data));render();}
+function login(){let c=document.getElementById("code").value.trim().toUpperCase();if(codes[c]){localStorage.setItem("bhr_code",c);localStorage.setItem("bhr_shop",codes[c]);showApp();}else alert("الكود غلط");}
+function showApp(){document.getElementById("lock").style.display="none";document.getElementById("app").style.display="block";document.getElementById("shopName").innerText="مرخص لـ: "+localStorage.getItem("bhr_shop")+" | الكود: "+localStorage.getItem("bhr_code");render();}
+function logout(){localStorage.removeItem("bhr_code");location.reload();}
+if(localStorage.getItem("bhr_code")) showApp();
+function showTab(id,btn){document.querySelectorAll('[id^="tab-"]').forEach(e=>e.style.display="none");document.getElementById("tab-"+id).style.display="block";document.querySelectorAll(".tabs button").forEach(b=>b.classList.remove("on"));btn.classList.add("on");}
+function addPerson(type){let inp=type=='cust'?document.getElementById("custName"):document.getElementById("supName");if(!inp.value.trim()) return alert("اكتب الاسم");data[type].push({name:inp.value,inv:0,paid:0});inp.value="";save();}
+function addMoney(type,i,kind){let v=parseFloat(prompt(kind=="inv"?"كم مبلغ الفاتورة / الدين؟":"كم مبلغ الدفع / السداد؟")||0);if(v>0){data[type][i][kind]+=v;save();}}
+function editName(type,i){let n=prompt("الاسم الجديد",data[type][i].name);if(n) data[type][i].name=n;save();}
+function delPerson(type,i){if(confirm("حذف؟")){data[type].splice(i,1);save();}}
+function addProduct(){let n=document.getElementById("pName").value,q=+document.getElementById("pQty").value,p=+document.getElementById("pPrice").value,b=+document.getElementById("pBuy").value;if(!n||!q) return alert("اكمل البيانات");data.prod.push({name:n,qty:q,price:p,buy:b});save();}
+function delProd(i){data.prod.splice(i,1);save();}
+function addInvoice(){let ci=document.getElementById("invCust").value,pi=document.getElementById("invProd").value,q=+document.getElementById("invQty").value,t=document.getElementById("invType").value;if(ci==""||pi=="") return alert("اختر الزبون والبضاعة");let pr=data.prod[pi];if(pr.qty<q) return alert("الكمية غير متوفرة");pr.qty-=q;let total=q*pr.price;data.inv.push({cust:data.cust[ci]?.name||"زبون",prod:pr.name,qty:q,total:total,type:t,date:new Date().toLocaleString("ar")});if(t=="debt"&&data.cust[ci]) data.cust[ci].inv+=total;save();window.print();}
 function render(){
-  let total=0;
-  document.getElementById('list').innerHTML = customers.map((c,i)=>{
-    let left=c.total-c.paid; total+=left;
-    return `<div class="item"><div><b>${c.name}</b><br>أخذ: ${c.total} | دفع: ${c.paid} | <b style="color:green">الباقي: ${left}</b></div><div><button class="btn" style="background:#2563eb;color:#fff" onclick="addDebt(${i})">+ أخذ</button> <button class="btn" style="background:#16a34a;color:#fff" onclick="addPay(${i})">+ دفع</button></div></div>`;
-  }).join('') || 'لا يوجد زبائن';
-  document.getElementById('total').innerText=total;
+let cl=document.getElementById("custList");cl.innerHTML="";data.cust.forEach((c,i)=>{let bal=c.inv-c.paid;cl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="yellow" style="width:110px" onclick="editName('cust',${i})">✏️ تعديل الاسم</button></div><div class="row"><div class="item">الفواتير:<br><b>${c.inv}</b></div><div class="item">المدفوع:<br><b>${c.paid}</b></div></div><div class="card" style="margin-top:8px"><div class="center">الباقي عليه - هو مدين لي</div><div class="big" style="color:${bal>=0?'#16a34a':'#dc2626'}">${bal} ريال</div><div class="small" style="color:#333">الفواتير ${c.inv} - اللي دفع ${c.paid} = باقي عليه ${bal}</div></div><div class="row"><button class="blue" onclick="addMoney('cust',${i},'inv')">+ دين / فاتورة</button><button class="green" onclick="addMoney('cust',${i},'paid')">+ دفع / سداد</button></div><button class="red" onclick="delPerson('cust',${i})">حذف</button></div>`;});
+let sl=document.getElementById("supList");sl.innerHTML="";data.sup.forEach((c,i)=>{let bal=c.inv-c.paid;sl.innerHTML+=`<div class="white"><div class="row"><b>👤 ${c.name}</b><button class="yellow" style="width:110px" onclick="editName('sup',${i})">✏️ تعديل الاسم</button></div><div class="row"><div class="item">علي:<br><b>${c.inv}</b></div><div class="item">دفعت:<br><b>${c.paid}</b></div></div><div class="card"><div class="center">الباقي علي - أنا مدين له</div><div class="big" style="color:#dc2626">${bal} ريال</div></div><div class="row"><button class="blue" onclick="addMoney('sup',${i},'inv')">+ دين علي</button><button class="green" onclick="addMoney('sup',${i},'paid')">+ سددت له</button></div><button class="red" onclick="delPerson('sup',${i})">حذف</button></div>`;});
+let pl=document.getElementById("prodList");pl.innerHTML="";data.prod.forEach((p,i)=>{pl.innerHTML+=`<div class="white"><b>📦 ${p.name}</b> - الكمية: ${p.qty} - البيع: ${p.price} - الشراء: ${p.buy}<button class="red" onclick="delProd(${i})">حذف</button></div>`;});
+let sc=document.getElementById("invCust");sc.innerHTML="";data.cust.forEach((c,i)=>sc.innerHTML+=`<option value="${i}">${c.name}</option>`);
+let sp=document.getElementById("invProd");sp.innerHTML="";data.prod.forEach((p,i)=>sp.innerHTML+=`<option value="${i}">${p.name} - ${p.price} ريال - متبقي ${p.qty}</option>`);
+let il=document.getElementById("invList");il.innerHTML="";data.inv.forEach((x,i)=>{il.innerHTML+=`<div class="white">🧾 فاتورة ${i+1} - ${x.cust} - ${x.prod} × ${x.qty} = <b>${x.total} ريال</b> - ${x.type=="debt"?"دين":"كاش"} - ${x.date}<button class="blue" onclick="window.print()">🖨️ طباعة</button></div>`;});
+let ss=data.prod.reduce((a,p)=>a+p.qty*p.price,0),sb=data.prod.reduce((a,p)=>a+p.qty*p.buy,0);
+document.getElementById("stockSell").innerText=ss;document.getElementById("stockBuy").innerText=sb;document.getElementById("stockProfit").innerText=ss-sb;
+document.getElementById("totalCust").innerText=data.cust.reduce((a,c)=>a+c.inv-c.paid,0);
+document.getElementById("totalSup").innerText=data.sup.reduce((a,c)=>a+c.inv-c.paid,0);
+document.getElementById("totalInv").innerText=data.inv.reduce((a,x)=>a+x.total,0);
+document.getElementById("invReport").innerHTML=data.prod.map(p=>`<div class="white">${p.name} - متبقي ${p.qty} - قيمة ${p.qty*p.price} ريال</div>`).join("");
 }
+function exportData(){let b=new Blob([JSON.stringify(data)],{type:"application/json"});let a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="BHR-backup.json";a.click();}
+function importData(e){let r=new FileReader();r.onload=()=>{data=JSON.parse(r.result);save();};r.readAsText(e.target.files[0]);}
+render();
 </script>
 </body>
-  </html>
+                                                                                                                                                           </html>
