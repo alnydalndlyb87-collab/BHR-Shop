@@ -3,23 +3,197 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>BHR-Shop | عرض خاص</title>
+<title>نظام محلك التقني - برؤية حديثة</title>
 <style>
-body{font-family:sans-serif;background:#f6f6f6;margin:0;text-align:center}
-.box{background:#fff;margin:20px;padding:20px;border-radius:15px}
-h1{color:#111} .price{font-size:28px;color:#e60000;font-weight:bold}
-.old{color:#888;text-decoration:line-through}
-button{background:#25D366;color:#fff;border:0;padding:15px 25px;font-size:18px;border-radius:10px;width:100%}
+*{box-sizing:border-box;font-family:Tahoma,Arial}
+body{margin:0;background:#0f172a;color:#111}
+.lock{max-width:420px;margin:60px auto;background:#fff;padding:25px;border-radius:16px;text-align:center;box-shadow:0 10px 30px #0003}
+.lock h1{color:#0f172a}
+input{width:100%;padding:14px;border:1px solid #ddd;border-radius:10px;margin:10px 0;font-size:18px;text-align:center}
+button{width:100%;padding:14px;border:0;border-radius:10px;background:#16a34a;color:#fff;font-size:18px;font-weight:bold;cursor:pointer}
+.app{display:none;background:#f1f5f9;min-height:100vh;padding:15px}
+header{background:#0f172a;color:#fff;padding:15px;border-radius:12px;display:flex;justify-content:space-between}
+.card{background:#fff;padding:15px;border-radius:12px;margin-top:12px}
+.item{border:1px solid #eee;padding:10px;border-radius:10px;margin-top:8px;display:flex;justify-content:space-between}
+.btn{padding:8px 12px;border:0;border-radius:8px;cursor:pointer;font-weight:bold}
 </style>
 </head>
 <body>
-<div class="box">
-<h1>🔥 عرض خاص اليوم</h1>
-<p>منتج BHR الأصلي</p>
-<p><span class="old">500 ريال</span></p>
-<p class="price">299 ريال فقط</p>
-<p>✅ توصيل سريع<br>✅ الدفع عند الاستلام</p>
-<button onclick="location.href='https://wa.me/967777517760'">اطلب الآن عبر واتساب</button>
+
+<div id="lockScreen" class="lock">
+<h1>💼 نظام محلك التقني</h1>
+<p style="font-weight:bold">برؤية حديثة - نسخة مرخصة</p>
+<p style="color:#666;font-size:14px">يلزم كود التفعيل للدخول<br>للحصول على كود، تواصل واتساب مع صاحب النظام</p>
+<input id="codeInput" placeholder="اكتب كود التفعيل مثلا BHR-0001">
+<button onclick="checkCode()">تفعيل ودخول ✅</button>
+<p id="msg" style="color:red"></p>
+<p style="font-size:13px;color:#888">السعر: 300 ريال سعودي بدل 500 ريال<br>هذه النسخة مرخصة لجهاز واحد، ولا تعمل بدون كود</p>
 </div>
+
+<div id="app" class="app">
+<header><div><b id="shopName">نظام محلك التقني</b><div id="licInfo" style="font-size:13px;opacity:.9"></div></div><button onclick="logout()" style="background:#fff;color:#b91c1c;width:auto;padding:8px 12px">خروج</button></header>
+
+<div class="card">
+<b>إجمالي ديون الزبائن: <span id="total" style="color:green">0</span> ريال</b>
+<hr>
+<input id="cusName" placeholder="اسم الزبون الجديد">
+<button onclick="addCus()" style="background:#2563eb">+ إضافة زبون</button>
+</div>
+
+<div class="card"><h3>الزبائن</h3><div id="list"></div></div>
+<div class="card"><p style="font-size:12px;color:#888">© نظام محلك التقني - برؤية حديثة - نسخة مرخصة - يمنع النسخ أو المشاركة</p></div>
+</div>
+
+<script>
+let CODES = {
+"BHR-0001": "محل 1",
+"BHR-0002": "محل 2",
+"BHR-0003": "محل 3",
+"BHR-0004": "محل 4",
+"BHR-0005": "محل 5",
+"BHR-0006": "محل 6",
+"BHR-0007": "محل 7",
+"BHR-0008": "محل 8",
+"BHR-0009": "محل 9",
+"BHR-0010": "محل 10",
+"BHR-0011": "محل 11",
+"BHR-0012": "محل 12",
+"BHR-0013": "محل 13",
+"BHR-0014": "محل 14",
+"BHR-0015": "محل 15",
+"BHR-0016": "محل 16",
+"BHR-0017": "محل 17",
+"BHR-0018": "محل 18",
+"BHR-0019": "محل 19",
+"BHR-0020": "محل 20",
+"BHR-0021": "محل 21",
+"BHR-0022": "محل 22",
+"BHR-0023": "محل 23",
+"BHR-0024": "محل 24",
+"BHR-0025": "محل 25",
+"BHR-0026": "محل 26",
+"BHR-0027": "محل 27",
+"BHR-0028": "محل 28",
+"BHR-0029": "محل 29",
+"BHR-0030": "محل 30",
+"BHR-0031": "محل 31",
+"BHR-0032": "محل 32",
+"BHR-0033": "محل 33",
+"BHR-0034": "محل 34",
+"BHR-0035": "محل 35",
+"BHR-0036": "محل 36",
+"BHR-0037": "محل 37",
+"BHR-0038": "محل 38",
+"BHR-0039": "محل 39",
+"BHR-0040": "محل 40",
+"BHR-0041": "محل 41",
+"BHR-0042": "محل 42",
+"BHR-0043": "محل 43",
+"BHR-0044": "محل 44",
+"BHR-0045": "محل 45",
+"BHR-0046": "محل 46",
+"BHR-0047": "محل 47",
+"BHR-0048": "محل 48",
+"BHR-0049": "محل 49",
+"BHR-0050": "محل 50",
+"BHR-0051": "محل 51",
+"BHR-0052": "محل 52",
+"BHR-0053": "محل 53",
+"BHR-0054": "محل 54",
+"BHR-0055": "محل 55",
+"BHR-0056": "محل 56",
+"BHR-0057": "محل 57",
+"BHR-0058": "محل 58",
+"BHR-0059": "محل 59",
+"BHR-0060": "محل 60",
+"BHR-0061": "محل 61",
+"BHR-0062": "محل 62",
+"BHR-0063": "محل 63",
+"BHR-0064": "محل 64",
+"BHR-0065": "محل 65",
+"BHR-0066": "محل 66",
+"BHR-0067": "محل 67",
+"BHR-0068": "محل 68",
+"BHR-0069": "محل 69",
+"BHR-0070": "محل 70",
+"BHR-0071": "محل 71",
+"BHR-0072": "محل 72",
+"BHR-0073": "محل 73",
+"BHR-0074": "محل 74",
+"BHR-0075": "محل 75",
+"BHR-0076": "محل 76",
+"BHR-0077": "محل 77",
+"BHR-0078": "محل 78",
+"BHR-0079": "محل 79",
+"BHR-0080": "محل 80",
+"BHR-0081": "محل 81",
+"BHR-0082": "محل 82",
+"BHR-0083": "محل 83",
+"BHR-0084": "محل 84",
+"BHR-0085": "محل 85",
+"BHR-0086": "محل 86",
+"BHR-0087": "محل 87",
+"BHR-0088": "محل 88",
+"BHR-0089": "محل 89",
+"BHR-0090": "محل 90",
+"BHR-0091": "محل 91",
+"BHR-0092": "محل 92",
+"BHR-0093": "محل 93",
+"BHR-0094": "محل 94",
+"BHR-0095": "محل 95",
+"BHR-0096": "محل 96",
+"BHR-0097": "محل 97",
+"BHR-0098": "محل 98",
+"BHR-0099": "محل 99",
+"BHR-0100": "محل 100"
+};
+
+let myCode = localStorage.getItem('bhr_license_code');
+let myShop = localStorage.getItem('bhr_license_shop');
+function showApp(){
+  document.getElementById('lockScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('shopName').innerText = myShop || 'نظام محلك التقني';
+  document.getElementById('licInfo').innerText = 'مرخص لـ: ' + (myShop||'') + ' | الكود: ' + myCode;
+  render();
+}
+if(myCode && CODES[myCode]){ showApp(); }
+function checkCode(){
+  let c = document.getElementById('codeInput').value.trim().toUpperCase();
+  if(CODES[c]){
+    localStorage.setItem('bhr_license_code', c);
+    localStorage.setItem('bhr_license_shop', CODES[c]);
+    myCode=c; myShop=CODES[c];
+    showApp();
+  } else {
+    document.getElementById('msg').innerText='❌ الكود غلط، تواصل مع البائع للحصول على كود صحيح';
+  }
+}
+function logout(){ if(confirm('متأكد تبي تسجيل خروج؟ بيحتاج كود مرة ثانية')){ localStorage.removeItem('bhr_license_code'); location.reload(); } }
+let customers = JSON.parse(localStorage.getItem('bhr_sale_customers')||'[]');
+function save(){ localStorage.setItem('bhr_sale_customers', JSON.stringify(customers)); render(); }
+function addCus(){
+  let n=document.getElementById('cusName').value.trim();
+  if(!n) return alert('اكتب اسم الزبون');
+  customers.push({name:n, total:0, paid:0});
+  document.getElementById('cusName').value=''; save();
+}
+function addDebt(i){
+  let a=+prompt('كم أخذ؟'); if(!a) return;
+  customers[i].total+=a; save();
+}
+function addPay(i){
+  let a=+prompt('كم دفع؟'); if(!a) return;
+  customers[i].paid+=a; save();
+}
+function render(){
+  let total=0;
+  document.getElementById('list').innerHTML = customers.map((c,i)=>{
+    let left=c.total-c.paid; total+=left;
+    return `<div class="item"><div><b>${c.name}</b><br>أخذ: ${c.total} | دفع: ${c.paid} | <b style="color:green">الباقي: ${left}</b></div><div><button class="btn" style="background:#2563eb;color:#fff" onclick="addDebt(${i})">+ أخذ</button> <button class="btn" style="background:#16a34a;color:#fff" onclick="addPay(${i})">+ دفع</button></div></div>`;
+  }).join('') || 'لا يوجد زبائن';
+  document.getElementById('total').innerText=total;
+}
+</script>
 </body>
-</html>
+  </html>
